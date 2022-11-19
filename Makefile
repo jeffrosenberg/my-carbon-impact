@@ -1,4 +1,4 @@
-.PHONY: build test zip init plan apply
+.PHONY: build test zip init plan apply deploy
 
 build:
 	$(MAKE) -C go build
@@ -17,3 +17,5 @@ plan:
 
 apply:
 	$(MAKE) -C terraform apply
+
+deploy: test zip apply

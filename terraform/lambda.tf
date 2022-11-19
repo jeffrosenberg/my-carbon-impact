@@ -18,10 +18,17 @@ resource "aws_iam_role" "iam_for_lambda" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "terraform_lambda_policy" {
+  role       = "${aws_iam_role.iam_for_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 module "rest_lambda" {
   source    = "./modules/rest-lambda"
   for_each  = var.entities
   entity    = each.value.entity
   operation = each.value.operation
   iam_role_arn = aws_iam_role.iam_for_lambda.arn
+  log_level = "TRACE" # TODO: Use .tfvars file
+  log_levels = var.log_levels
 }

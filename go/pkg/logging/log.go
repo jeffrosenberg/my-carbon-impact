@@ -2,6 +2,7 @@ package logging
 
 import (
 	"context"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -15,8 +16,10 @@ var (
 	once   sync.Once
 	logger *zerolog.Logger
 
-	// Inject via CDK configuration
-	LogLevel string = "0" // zerolog.Level: Trace = -1, Debug = 0, Info = 1, Error = 3, Disabled = 7
+	// Inject via environment variable
+	logLevel zerolog.Level = zerolog.DebugLevel // zerolog.Level: Trace = -1, Debug = 0, Info = 1, Error = 3, Disabled = 7
+
+	// TODO: Inject at compile-time?
 	CommitID string = "unknown"
 )
 
@@ -44,14 +47,13 @@ func GetLoggerWithContext(ctx context.Context) *zerolog.Logger {
 				zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 				lg := log.Logger
 
-				// Read LogLevel from linker value
-				var level zerolog.Level
-				convertedLevel, err := strconv.ParseInt(LogLevel, 0, 8)
+				// Read LogLevel from environment variables
+				env := os.Getenv("zerolog_level")
+				level, err := strconv.ParseInt(env, 0, 8)
 				if err != nil {
-					level = zerolog.InfoLevel
-					lg.Warn().Str("LogLevel", LogLevel).Msg("Unable to convert LogLevel to zerolog.Level")
+					lg.Warn().Str("zerolog_level", env).Msg("Unable to set zerolog.Level")
 				} else {
-					level = zerolog.Level(convertedLevel)
+					logLevel = zerolog.Level(level)
 				}
 
 				// If possible, enhance the logger with info from the lambda context

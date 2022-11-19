@@ -22,7 +22,6 @@ func initLogger(ctx context.Context) {
 			Str("entity", "profile").
 			Str("operation", "create").
 			Logger()
-	logger.Trace().Msg("")
 }
 
 func main() {
