@@ -1,4 +1,7 @@
-.PHONY: build test zip init plan apply deploy
+.PHONY: generate build test zip init plan apply deploy
+
+generate:
+	$(MAKE) -C go generate
 
 build:
 	$(MAKE) -C go build
@@ -11,6 +14,9 @@ zip:
 
 init:
 	$(MAKE) -C terraform plan
+
+validate:
+	$(MAKE) -C terraform validate
 
 plan:
 	$(MAKE) -C terraform plan

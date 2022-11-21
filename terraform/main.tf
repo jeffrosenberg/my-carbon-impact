@@ -16,6 +16,7 @@ provider "aws" {
   default_tags {
     tags = {
       project = "my-carbon-impact"
+      env = var.env
     }
   }
 }

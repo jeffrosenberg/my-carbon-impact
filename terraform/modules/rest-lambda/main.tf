@@ -4,6 +4,10 @@ data "archive_file" "zip" {
   output_path = "../go/bin/${var.entity}-${var.operation}.zip"
 }
 
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 locals {
   name = "${var.entity}-${var.operation}"
 }
@@ -25,7 +29,8 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      zerolog_level = var.log_levels[var.log_level]
+      zerolog_level = var.log_level
+      region = data.aws_region.current.name
     }
   }
 

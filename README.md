@@ -2,6 +2,24 @@
 
 An app to simplify tracking your carbon footprint over time
 
+## Design decisions and apologies
+
+This project is meant to be a learning experience for me, more than anything functional.
+Although I've chosen a subject area that interests me and which could have a real use,
+it will most likely just serve as a platform for me to noodle on occasionally, as well
+as a template for other projects I might want to start using a similar stack.
+
+As a result, the design decisions made in this project are based more around the things
+I'd like to practice than they are around any sort of technical optimization.
+Some of the topics I intend to explore with this project include:
+
+- NoSQL single-table design
+  - It's highly likely that this schema would be better suited to a standard RDBMS
+- Logging and metrics in AWS
+- Managing deployments with Terraform
+- Working with channels
+  - May be a while before I get to this one
+
 ## Development notes
 
 > These are just meant to be notes for myself, since I'm developing this sporadically.
@@ -34,8 +52,14 @@ Running manually in AWS Console, they will emit a success status code.
 
 This is just a high level list that itself could use refinement!
 
-- Develop API Gateway endpoints in parallel with the lambdas
-- Flesh out Profile entity and functionality
-- Create mileage event and tests
-- Persist data (Cockroach? Dynamo?)
-- Build a simple UI
+- Build "horizontally" (one piece of functionality at a time, across the stack)
+- Start by building out the full stack:
+  - Develop API Gateway endpoints in parallel with the lambdas
+  - Persist data (DynamoDb single-table design)
+  - Add logging / metrics / alerting / etc.
+  - Build a simple UI
+    - Server-rendered using Go templates
+    - Something like Alpine/HTMX for smoother transitions?
+- Add functionality
+  - Flesh out Profile entity and functionality
+  - Create mileage event and tests

@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/jeffrosenberg/my-carbon-impact/internal/profile"
-	"github.com/jeffrosenberg/my-carbon-impact/pkg/epa"
+	epa "github.com/jeffrosenberg/my-carbon-impact/pkg/constants"
 )
 
 type VehicleMileageInput struct {
