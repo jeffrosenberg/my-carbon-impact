@@ -72,7 +72,7 @@ func handler(ctx context.Context, e events.APIGatewayProxyRequest) (event events
 		return
 	}
 
-	createProfileRequest := create.DynamoDbCreateInput{
+	createProfileRequest := &create.DynamoDbCreateInput{
 		Input:  profile,
 		Ctx:    ctx,
 		Client: client,

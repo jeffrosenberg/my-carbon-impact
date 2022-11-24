@@ -60,6 +60,7 @@ This is just a high level list that itself could use refinement!
   - Build a simple UI
     - Server-rendered using Go templates
     - Something like Alpine/HTMX for smoother transitions?
+- Create end-to-end tests and build pipeline
 - Add functionality
   - Flesh out Profile entity and functionality
   - Create mileage event and tests

@@ -16,7 +16,7 @@ type DynamoDbCreateInput struct {
 	Logger zerolog.Logger           `json:"-"`
 }
 
-func CreateProfile(req DynamoDbCreateInput) (*dynamodb.PutItemOutput, error) {
+func CreateProfile(req *DynamoDbCreateInput) (*dynamodb.PutItemOutput, error) {
 	req.Logger.Trace().Msg("Create profile")
 
 	dbInput, err := req.Input.GeneratePutItemInput()

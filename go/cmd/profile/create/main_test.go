@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gofrs/uuid"
 	"github.com/jeffrosenberg/my-carbon-impact/mock/mock_aws"
 	"github.com/jeffrosenberg/my-carbon-impact/mock/mock_uuid"
 	"github.com/jeffrosenberg/my-carbon-impact/pkg/logging"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/gofrs/uuid"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

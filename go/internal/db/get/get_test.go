@@ -1,17 +1,17 @@
-package create
+package get
 
 import (
 	"context"
 	"errors"
 	"testing"
 
-	"github.com/jeffrosenberg/my-carbon-impact/internal/profile"
+	"github.com/gofrs/uuid"
+
 	"github.com/jeffrosenberg/my-carbon-impact/mock/mock_aws"
 	"github.com/jeffrosenberg/my-carbon-impact/pkg/logging"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/gofrs/uuid"
 	"github.com/golang/mock/gomock"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
@@ -37,36 +37,30 @@ func getTestUuid() uuid.UUID {
 	return testUuid
 }
 
-func TestCreateProfile(t *testing.T) {
+func TestGetProfile(t *testing.T) {
 	tests := []struct {
 		name          string
 		skip          bool
-		input         *profile.Profile
 		mock          func()
-		expected      *dynamodb.PutItemOutput
+		expected      *dynamodb.GetItemOutput
 		expectedError string
 	}{
 		{
 			name: "happy path",
-			input: &profile.Profile{
-				ID:    getTestUuid(),
-				Name:  "Jeff",
-				Email: "jeff@mailinator.com",
-			},
 			mock: func() {
 				mockClient.
 					EXPECT().
-					PutItem(gomock.Any(), gomock.Any()). // TODO: Replace gomock.Any() with real expectations
-					Return(&dynamodb.PutItemOutput{
-						Attributes: map[string]types.AttributeValue{
+					GetItem(gomock.Any(), gomock.Any()). // TODO: Replace gomock.Any() with real expectations
+					Return(&dynamodb.GetItemOutput{
+						Item: map[string]types.AttributeValue{
 							"id":    &types.AttributeValueMemberS{Value: getTestUuid().String()},
 							"name":  &types.AttributeValueMemberS{Value: "Jeff"},
 							"email": &types.AttributeValueMemberS{Value: "jeff@mailinator.com"},
 						},
 					}, nil)
 			},
-			expected: &dynamodb.PutItemOutput{
-				Attributes: map[string]types.AttributeValue{
+			expected: &dynamodb.GetItemOutput{
+				Item: map[string]types.AttributeValue{
 					"id":    &types.AttributeValueMemberS{Value: getTestUuid().String()},
 					"name":  &types.AttributeValueMemberS{Value: "Jeff"},
 					"email": &types.AttributeValueMemberS{Value: "jeff@mailinator.com"},
@@ -74,17 +68,22 @@ func TestCreateProfile(t *testing.T) {
 			},
 		},
 		{
-			name: "database error",
-			input: &profile.Profile{
-				ID:    getTestUuid(),
-				Name:  "Jeff",
-				Email: "jeff@mailinator.com",
-			},
+			name: "no record found",
 			mock: func() {
 				mockClient.
 					EXPECT().
-					PutItem(gomock.Any(), gomock.Any()).
-					Return(&dynamodb.PutItemOutput{}, errors.New("database error"))
+					GetItem(gomock.Any(), gomock.Any()). // TODO: Replace gomock.Any() with real expectations
+					Return(&dynamodb.GetItemOutput{}, nil)
+			},
+			expected: &dynamodb.GetItemOutput{},
+		},
+		{
+			name: "database error",
+			mock: func() {
+				mockClient.
+					EXPECT().
+					GetItem(gomock.Any(), gomock.Any()). // TODO: Replace gomock.Any() with real expectations
+					Return(&dynamodb.GetItemOutput{}, errors.New("database error"))
 			},
 			expectedError: "database error",
 		},
@@ -100,14 +99,14 @@ func TestCreateProfile(t *testing.T) {
 			ctrl = *gomock.NewController(t)
 			initTests(&ctrl)
 
-			req := DynamoDbCreateInput{
-				Input:  test.input,
+			req := &DynamoDbGetInput{
+				Id:     getTestUuid(),
 				Ctx:    context.Background(),
 				Client: mockClient,
 				Logger: logger,
 			}
 			test.mock()
-			got, err := CreateProfile(&req)
+			got, err := GetProfile(req)
 			if test.expectedError != "" {
 				assert.ErrorContains(t, err, test.expectedError)
 			} else {

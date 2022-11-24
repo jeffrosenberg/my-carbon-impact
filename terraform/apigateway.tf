@@ -12,11 +12,34 @@ resource "aws_api_gateway_resource" "profile" {
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
+resource "aws_api_gateway_resource" "profile_id" {
+  path_part   = "{id}"
+  parent_id   = aws_api_gateway_resource.profile.id
+  rest_api_id = aws_api_gateway_rest_api.api.id
+}
+
+# resource "aws_api_gateway_model" "profile" {
+#   rest_api_id  = aws_api_gateway_rest_api.api.id
+#   name         = "profile"
+#   description  = "a JSON schema"
+#   content_type = "application/json"
+#   schema = <<EOF
+# {
+#   "id": "string",
+#   "name": "string",
+#   "email": "string"
+# }
+# EOF
+# }
+
 resource "aws_api_gateway_method" "profile_get" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.profile.id
+  resource_id   = aws_api_gateway_resource.profile_id.id
   http_method   = "GET"
   authorization = "NONE"
+  request_parameters = {
+    "method.request.path.id" = true
+  }
 }
 
 resource "aws_api_gateway_method" "profile_create" {
@@ -28,7 +51,7 @@ resource "aws_api_gateway_method" "profile_create" {
 
 resource "aws_api_gateway_integration" "profile_get" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.profile.id
+  resource_id             = aws_api_gateway_resource.profile_id.id
   http_method             = aws_api_gateway_method.profile_get.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -57,12 +80,22 @@ resource "aws_api_gateway_stage" "mci" {
 }
 
 resource "aws_api_gateway_deployment" "mci" {
-  depends_on = [
-      aws_api_gateway_integration.profile_get
-    , aws_api_gateway_integration.profile_create
-  ]
-
   rest_api_id = aws_api_gateway_rest_api.api.id
+  
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.profile,
+      aws_api_gateway_resource.profile_id,
+      aws_api_gateway_method.profile_get,
+      aws_api_gateway_method.profile_create,
+      aws_api_gateway_integration.profile_get,
+      aws_api_gateway_integration.profile_create,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 output "profile_url" {
