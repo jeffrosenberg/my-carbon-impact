@@ -33,22 +33,35 @@ Resources are deployed to aws-west-2 (Oregon)
 
 Resources existing so far:
 
-- Lambda (`cmd` functions):
-  - Profile CRUD stubs
+- API Lambda (`cmd/api`):
+  - Profile CRUD lambdas
+    - Create and Get are fleshed out with persistence, others are stubs
   - "Scaffold" CRUD stubs
     - I don't even remember what these are, I think just meant to be a placeholder/template for future entities
-- Enabling code (`pkg` / `internal` functions):
+- Web Lambda (`cmd/web`):
+  - Profile page lambdas
+    - Create and Get have very basic functionality but need more work
+- Enabling code (`pkg` / `internal`):
   - `Profile` struct and initial methods: `go/internal/profile/profile.go`
   - `Vehicle` struct and initial methods: `go/internal/profile/vehicle.go`
-  - EPA constants: `go/pkg/epa/epa_constants.go`
+    - I jumped the gun on creating this, I'm not using it yet
+  - DynamoDb persistence: `go/internal/db`
+    - Create and Get defined, no scan/query/update
+  - EPA constants: `go/pkg/constants/epa_constants.go`
   - Logging: `go/pkg/logging/log.go`
+
+### TODO
+
+> Use this section for notes on next steps
+
+2022-11-27: Refactor Lambdas in some way to use less boilerplate?
 
 ### Testing / executing
 
 At present, the only code that can be executed is the `profile-*` lambdas.
 Running manually in AWS Console, they will emit a success status code.
 
-### TODO / roadmap
+### Roadmap / development plan
 
 This is just a high level list that itself could use refinement!
 

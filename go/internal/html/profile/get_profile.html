@@ -1,0 +1,21 @@
+{{ define "content" }}
+<table>
+  <thead>
+    Profile page: {{.Message}}
+  </thead>
+  <tbody>
+    <tr>
+      <td>ID</td>
+      <td>{{.Profile.ID}}</td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>{{.Profile.Name}}</td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td>{{.Profile.Email}}</td>
+    </tr>
+  </tbody>
+</table>
+{{- end -}}

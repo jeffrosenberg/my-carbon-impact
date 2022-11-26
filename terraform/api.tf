@@ -1,7 +1,3 @@
-locals {
-  stage = "dev"
-}
-
 resource "aws_api_gateway_rest_api" "api" {
   name = "My Carbon Impact API"
 }
@@ -55,7 +51,7 @@ resource "aws_api_gateway_integration" "profile_get" {
   http_method             = aws_api_gateway_method.profile_get.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.rest_lambda["profile-get"].invoke_arn
+  uri                     = module.api_lambda["profile-get"].invoke_arn
 }
 
 resource "aws_api_gateway_integration" "profile_create" {
@@ -64,13 +60,13 @@ resource "aws_api_gateway_integration" "profile_create" {
   http_method             = aws_api_gateway_method.profile_create.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.rest_lambda["profile-create"].invoke_arn
+  uri                     = module.api_lambda["profile-create"].invoke_arn
 }
 
 resource "aws_api_gateway_stage" "mci" {
   deployment_id = aws_api_gateway_deployment.mci.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  stage_name    = local.stage
+  stage_name    = var.api_stage
   depends_on    = [aws_api_gateway_account.ApiGatewayAccountSetting]
 
   access_log_settings {
@@ -98,8 +94,8 @@ resource "aws_api_gateway_deployment" "mci" {
   }
 }
 
-output "profile_url" {
-  value = "${aws_api_gateway_stage.mci.invoke_url}${aws_api_gateway_resource.profile.path}"
+output "api_url" {
+  value = "${aws_api_gateway_stage.mci.invoke_url}"
 }
 
 # Permissions and logging
@@ -107,7 +103,7 @@ output "profile_url" {
 resource "aws_lambda_permission" "apigw_profile_create" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = module.rest_lambda["profile-create"].function_name
+  function_name = module.api_lambda["profile-create"].function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
@@ -116,7 +112,7 @@ resource "aws_lambda_permission" "apigw_profile_create" {
 resource "aws_lambda_permission" "apigw_profile_get" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = module.rest_lambda["profile-get"].function_name
+  function_name = module.api_lambda["profile-get"].function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"

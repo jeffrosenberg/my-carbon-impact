@@ -75,8 +75,17 @@ resource "aws_iam_policy_attachment" "lambda_data_access" {
   policy_arn = aws_iam_policy.lambda_data_access.arn
 }
 
-module "rest_lambda" {
-  source    = "./modules/rest-lambda"
+module "api_lambda" {
+  source    = "./modules/api-lambda"
+  for_each  = var.entities
+  entity    = each.value.entity
+  operation = each.value.operation
+  iam_role_arn = aws_iam_role.mci_lambda.arn
+  log_level = var.log_level
+}
+
+module "web_lambda" {
+  source    = "./modules/web-lambda"
   for_each  = var.entities
   entity    = each.value.entity
   operation = each.value.operation

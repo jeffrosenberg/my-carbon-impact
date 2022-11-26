@@ -1,7 +1,7 @@
 data "archive_file" "zip" {
   type        = "zip"
-  source_file = "../go/bin/${var.entity}-${var.operation}"
-  output_path = "../go/bin/${var.entity}-${var.operation}.zip"
+  source_file = "../go/bin/api/${var.entity}-${var.operation}"
+  output_path = "../go/bin/api/${var.entity}-${var.operation}.zip"
 }
 
 data "aws_caller_identity" "current" {}
@@ -15,10 +15,10 @@ locals {
 resource "aws_lambda_function" "lambda" {
   # If the file is not in the current working directory you will need to include a 
   # path.module in the filename.
-  filename      = "../go/bin/${var.entity}-${var.operation}.zip"
+  filename      = "../go/bin/api/${local.name}.zip"
   function_name = local.name
   role          = var.iam_role_arn
-  handler       = local.name
+  handler       = "main"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
@@ -37,6 +37,7 @@ resource "aws_lambda_function" "lambda" {
   tags = {
     entity = var.entity
     operation = var.operation
+    tier = "api"
   }
 }
 

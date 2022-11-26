@@ -7,22 +7,23 @@ variable "entities" {
       entity    = "profile",
       operation = "create"
     },
-    "profile-delete" = {
-      entity    = "profile",
-      operation = "delete"
-    },
+    # "profile-delete" = {
+    #   entity    = "profile",
+    #   operation = "delete"
+    # },
     "profile-get" = {
       entity    = "profile",
       operation = "get"
     },
-    "profile-list" = {
-      entity    = "profile",
-      operation = "list"
-    },
-    "profile-update" = {
-      entity    = "profile",
-      operation = "update"
-    },
+    # Probably never going to want this one
+    # "profile-list" = {
+    #   entity    = "profile",
+    #   operation = "list"
+    # },
+    # "profile-update" = {
+    #   entity    = "profile",
+    #   operation = "update"
+    # },
     # etc...
     # "scaffold-create" = {
     #   entity    = "scaffold",

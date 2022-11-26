@@ -4,6 +4,12 @@ variable env {
   default = "dev"
 }
 
+variable api_stage {
+  description = "stage for API gateway"
+  type = string
+  default = "dev"
+}
+
 variable log_level {
   description = "zerolog log level"
   type = number
